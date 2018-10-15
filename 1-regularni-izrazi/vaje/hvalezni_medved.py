@@ -6,6 +6,8 @@
 # medved*.
 ###############################################################################
 
+import re
+
 test_text = """Gori nekje v gorah, ne ve se več, ali je bilo pri Macigoju ali
 Naravniku, je šivala gospodinja v senci pod drevesom in zibala otroka. Naenkrat
 prilomasti - pa prej ni ničesar opazila - medved in ji moli taco, v kateri je
@@ -22,11 +24,19 @@ medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn"."""
 #
 # Namig: Pomagajte si z regex znakom za mejo [\b].
 #
+
 # >>> find_words(test_text, 'de')
 # {'izdere', 'debel', 'oddide', 'začudeno'}
 ###############################################################################
+def find_words(niz, podniz):
+    besede = set()
+    vzorec = r"\b\w*" + podniz + r"\w*\b"
+    for ujemanje in re.finditer(vzorec, niz):
+        a = ujemanje.group(0)        a = 
+        besede.add(a)
+    return besede
 
-
+    
 ###############################################################################
 # 2) Sestavite funkcijo [find_prefix], ki vrne množico vseh besed, ki se
 #    pojavijo v nizu in imajo dano predpono.

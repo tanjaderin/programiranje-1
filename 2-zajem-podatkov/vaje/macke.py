@@ -8,27 +8,29 @@ import csv
 ###############################################################################
 
 # definiratje URL glavne strani bolhe za oglase z mačkami
-cats_frontpage_url = 'TODO'
+cats_frontpage_url = 'http://www.bolha.com/zivali/male-zivali/macke/'
 # mapa, v katero bomo shranili podatke
-cat_directory = 'TODO'
+cat_directory = 'cat_data'
 # ime datoteke v katero bomo shranili glavno stran
-frontpage_filename = 'TODO'
+frontpage_filename = 'frontapage.html'
 # ime CSV datoteke v katero bomo shranili podatke
-csv_filename = 'TODO'
+csv_filename = 'cat_catdata.csv'
 
 
-def download_url_to_string(TODO):
+def download_url_to_string(url):
     '''This function takes a URL as argument and tries to download it
     using requests. Upon success, it returns the page contents as string.'''
     try:
+        r = requests.get(url)
         # del kode, ki morda sproži napako
-        return TODO
-    except 'TODO':
+
+    except requests.exceptions.ConnectionError:
+        print('nemore '+ url)
         # koda, ki se izvede pri napaki
         # dovolj je če izpišemo opozorilo in prekinemo izvajanje funkcije
-        return TODO
+        return ''
     # nadaljujemo s kodo če ni prišlo do napake
-    return TODO
+    return r.text
 
 
 def save_string_to_file(text, directory, filename):
@@ -44,10 +46,10 @@ def save_string_to_file(text, directory, filename):
 # Definirajte funkcijo, ki prenese glavno stran in jo shrani v datoteko.
 
 
-def save_frontpage(TODO):
+def save_frontpage():
     '''Save "cats_frontpage_url" to the file
     "cat_directory"/"frontpage_filename"'''
-    return TODO
+    return save_string_to_file(download_url_to_string(cats_frontpage_url),cat_directory,frontpage_filename)
 
 ###############################################################################
 # Po pridobitvi podatkov jih želimo obdelati.
@@ -56,7 +58,9 @@ def save_frontpage(TODO):
 
 def read_file_to_string(directory, filename):
     '''Return the contents of the file "directory"/"filename" as a string.'''
-    return TODO
+    path = os.path.join(directory, filename)
+    with open(path, encording = 'utf-8') as dat:
+        return dat.read()
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja vsebino spletne strani,
 # in ga razdeli na dele, kjer vsak del predstavlja en oglas. To storite s
