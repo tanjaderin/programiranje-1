@@ -68,18 +68,32 @@ def read_file_to_string(directory, filename):
 # oglasa. Funkcija naj vrne seznam nizov.
 
 
-def page_to_ads(TODO):
+def page_to_ads(page):
     '''Split "page" to a list of advertisement blocks.'''
-    return TODO
+    seznam = []
+    zacetek = r'class="coloumn image">'
+    konec =  r'class="clear"></div>''
+    vzorec = r'zacetek.\+konec'
+    for ujemnaje in re.finditer(vzorec,page):
+        seznam.append(ujemanje)
+    return seznam
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja oglas, in izlušči
 # podatke o imenu, ceni in opisu v oglasu.
 
 
-def get_dict_from_ad_block(TODO):
+def get_dict_from_ad_block(niz):
     '''Build a dictionary containing the name, description and price
     of an ad block.'''
-    return TODO
+    vzorec = re.compile(
+    r' <h3><a title="(?P<ime>.+?)" href=".+.html.+?+">(?P<ime>.+?)</a></h3>'
+    r'<div class="price"><span>(?P<cena>.+?)<. '
+    
+    re.DOTALL)
+    podatki= []
+    for ujemanje in vzorec.finditer(niz):
+        podatki.append(ujemanje)
+    return podatki
 
 # Definirajte funkcijo, ki sprejme ime in lokacijo datoteke, ki vsebuje
 # besedilo spletne strani, in vrne seznam slovarjev, ki vsebujejo podatke o

@@ -30,7 +30,7 @@ medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn"."""
 ###############################################################################
 def find_words(niz, podniz):
     besede = set()
-    vzorec = r"\b\w*" + podniz + r"\w*\b"
+    vzorec = r'\b\w*' + podniz + r'\w*\b'
     for ujemanje in re.finditer(vzorec, niz):
         a = ujemanje.group(0)       
         besede.add(a)
@@ -46,7 +46,7 @@ def find_words(niz, podniz):
 ###############################################################################
 def find_prefix(niz, predpona):
     besede = set()
-    vzorec = r'\b' + predpona + r"\w*\b"
+    vzorec = r'\b' + predpona + r'\w*\b'
     for ujemanje in re.finditer(vzorec, niz):
         a = ujemanje.group(0)       
         besede.add(a)
@@ -59,9 +59,9 @@ def find_prefix(niz, predpona):
 # >>> find_suffix(test_text, 'la')
 # {'zibala', 'razveselila', 'prestrašila', 'šivala', 'opazila', 'tla'}
 ###############################################################################
-def find_suffix(niz,pripona):
-     besede = set()
-    vzorec = r"\b\w*" + pripona + r"\b"
+def find_suffix(niz, pripona):
+    besede = set()
+    vzorec = r'\b\w*' + pripona + r'\b'
     for ujemanje in re.finditer(vzorec, niz):
         a = ujemanje.group(0)       
         besede.add(a)
@@ -77,7 +77,7 @@ def find_suffix(niz,pripona):
 ###############################################################################
 def double_letters(niz):
     besede = set()
-    vzorec = r"\b\w*(\w)\1\w*\b"
+    vzorec = r'\b\w*(\w)\1\w*\b'
     for ujemanje in re.finditer(vzorec, niz):
         a = ujemanje.group(0)       
         besede.add(a)
