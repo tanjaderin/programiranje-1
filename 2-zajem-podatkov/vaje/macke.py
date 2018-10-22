@@ -71,15 +71,14 @@ def read_file_to_string(directory, filename):
 def page_to_ads(page):
     '''Split "page" to a list of advertisement blocks.'''
     seznam = []
-    zacetek = r'class="coloumn image">'
-    konec =  r'class="clear"></div>''
-    vzorec = r'zacetek.\+konec'
+    vzorec = re.compile(r'<div class="coloumn image">(\s*?.*?\n)*?\s*?<div class="miscellaneous">')
     for ujemnaje in re.finditer(vzorec,page):
-        seznam.append(ujemanje)
+        seznam.append(ujemanje.group(0))
     return seznam
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja oglas, in izlušči
 # podatke o imenu, ceni in opisu v oglasu.
+
 
 
 def get_dict_from_ad_block(niz):
