@@ -59,8 +59,9 @@ def save_frontpage():
 def read_file_to_string(directory, filename):
     '''Return the contents of the file "directory"/"filename" as a string.'''
     path = os.path.join(directory, filename)
-    with open(path, encording = 'utf-8') as dat:
-        return dat.read()
+    with open(path,'r', encording = 'utf-8') as dat:
+        vsebina= dat.read()
+    return vsebina
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja vsebino spletne strani,
 # in ga razdeli na dele, kjer vsak del predstavlja en oglas. To storite s
@@ -72,7 +73,7 @@ def page_to_ads(page):
     '''Split "page" to a list of advertisement blocks.'''
     seznam = []
     vzorec = re.compile(r'<div class="coloumn image">(\s*?.*?\n)*?\s*?<div class="miscellaneous">')
-    for ujemnaje in re.finditer(vzorec,page):
+    for ujemnaje in vzorec.finditer(page):
         seznam.append(ujemanje.group(0))
     return seznam
 
@@ -81,27 +82,28 @@ def page_to_ads(page):
 
 
 
-def get_dict_from_ad_block(niz):
+def get_dict_from_ad_block(block):
     '''Build a dictionary containing the name, description and price
     of an ad block.'''
     vzorec = re.compile(
-    r' <h3><a title="(?P<ime>.+?)" href=".+.html.+?+">(?P<ime>.+?)</a></h3>'
-    r'<div class="price"><span>(?P<cena>.+?)<. '
-    
+    r' <table><tr><td><a title="(?P<ime>.+?)" .*?'
+    r'<div class="price">(?P<cena>.+?)</div> '
+    r'</h3>(?P<opis>.*?)</div>',
     re.DOTALL)
-    podatki= []
-    for ujemanje in vzorec.finditer(niz):
-        podatki.append(ujemanje)
-    return podatki
+    podatki = re.search(vzorec,block)
+    slovar = podatki.groupdict()
+    return slovar
 
 # Definirajte funkcijo, ki sprejme ime in lokacijo datoteke, ki vsebuje
 # besedilo spletne strani, in vrne seznam slovarjev, ki vsebujejo podatke o
 # vseh oglasih strani.
 
 
-def ads_from_file(TODO):
+def ads_from_file(directory, filename):
     '''Parse the ads in filename/directory into a dictionary list.'''
-    return TODO
+    
+    return [get_dict_from_ad_block(block) for block in page_to_ads(read_file_to_string(directory, filename))]
+    
 
 ###############################################################################
 # Obdelane podatke želimo sedaj shraniti.
@@ -126,5 +128,7 @@ def write_csv(fieldnames, rows, directory, filename):
 # stolpce [fieldnames] pridobite iz slovarjev.
 
 
-def write_cat_ads_to_csv(TODO):
-    return TODO
+def write_cat_ads_to_csv(ads):
+    fieldnames = ads[0].keys()
+    write_csv(fieldnames, ads,cat_directory, csv_filename)
+    return None
