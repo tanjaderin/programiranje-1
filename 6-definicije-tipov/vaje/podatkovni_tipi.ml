@@ -21,7 +21,41 @@
  - : euro = Euro 0.4305
 [*----------------------------------------------------------------------------*)
 
+(*let x num num =
+type int_option = None | Some of int
+type a option = None | Some of a
+*)
 
+(*type barva = 
+|red
+|blue
+|yellow
+|rgb of int * int * int  *)
+
+(*type a list = 
+|Empty (* []*)
+|Cons  of a * a list (* x:: xs *)
+ *)
+
+ (*type a drevo = 
+|Empty (* []*)
+|node  of a * a drevo * a drevo (* x:: xs *)
+ 
+let has_zero tree=
+  match tree with
+  |emty->
+  |node(x, left_tree,right_tree)->
+
+*)
+
+
+type euro  = Euro of float
+type dollar = Dollar of float
+
+let dollar_to_euro_fake dolar = 0.2 *. dolar
+let dollar_to_euro_legit dollar = 
+  match dollar with 
+  |Dollar v ->Euro(0.2*. v)
 
 (*----------------------------------------------------------------------------*]
  Definirajte tip [currency] kot en vsotni tip z konstruktorji za jen, funt
@@ -35,7 +69,16 @@
  - : currency = Pound 0.007
 [*----------------------------------------------------------------------------*)
 
+type currency =
+  |Yen of float
+  |Pound of float
+  |Krona of float
 
+let to_pound c =
+  match c with
+   |Yen y -> Pound (1. *.y)
+   |Pound y -> Pound y
+   |Krona y -> Krona(0.3 *.y)
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  Želimo uporabljati sezname, ki hranijo tako cela števila kot tudi logične
@@ -48,6 +91,11 @@
  x :: xs v Ocamlu).
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
 
+(*type celo = 
+
+type 'a seznam =
+  | Prazen
+  | Sestavljen of 'a * 'a seznam*)
 (*----------------------------------------------------------------------------*]
  Definirajte tip [intbool_list] z konstruktorji za:
   1.) prazen seznam,
@@ -57,22 +105,68 @@
  Nato napišite testni primer, ki bi predstavljal "[5; true; false; 7]".
 [*----------------------------------------------------------------------------*)
 
+(*let rec intbool_map(f_int : int -> int)(f_bool : bool->bool) = function*)
+
+let rec map f = function
+|[] ->  []
+|x:: xs -> f x :: map xs
+
+type intbool_list =
+  | Empty
+  | Intval of int * intbool_list
+  | Boolval of bool * intbool_list
+
+let rec intbool_map(f_int : int -> int)(f_bool : bool->bool) = function
+| Empty -> Empty
+| Intval () of int * intbool_list
+| Boolval of bool * intbool_list
 
 
+
+
+  let Intval(5, Boolval(true,(Boolval(false Intval 7))))
 (*----------------------------------------------------------------------------*]
  Funkcija [intbool_map f_int f_bool ib_list] preslika vrednosti [ib_list] v nov
  [intbool_list] seznam, kjer na elementih uporabi primerno od funkcij [f_int]
  oz. [f_bool].
 [*----------------------------------------------------------------------------*)
 
-let rec intbool_map = ()
+
+
+
+let rec intbool_map(f_int : int -> int)(f_bool : bool->bool) = function
+| Empty -> Empty
+| Intval (i, ib_list) -> Intval f_int i , intbool map f_int f_bool ib_list)
+| Boolval (b , ib_list) -> Boolval f_bool b , intbool map f_int f_bool ib_list)
+
+
+let rec intbool_map(f_int : int -> int)(f_bool : bool->bool) = function
+| Empty -> Empty
+| Intval (i, ib_list) ->
+let new_i = f_int i in
+let new_tail = intbool_map f_int f_bool ib_list in
+Intval(new_i, new_tail)
+|Intbool (b , ib_list) ->
+let new_b = f_bool b in
+let new_tail = intbool_map f_int f_bool ib_list in
+Boolval (new_b, new_tail)
+
 
 (*----------------------------------------------------------------------------*]
  Funkcija [intbool_reverse] obrne vrstni red elementov [intbool_list] seznama.
  Funkcija je repno rekurzivna.
 [*----------------------------------------------------------------------------*)
 
-let rec intbool_reverse = ()
+let rec intbool_reverse ib_list =
+  let rec reverse' (acc : intbool_list)= function
+   | Empty-> acc
+   |Intval (i, ib_tail )-> 
+     let new_acc = Intval(i,acc) in
+     reverse' new_acc ib_tail
+   |Boolval(b, ib_tail)-> 
+     let new_acc = Boolval(b,acc) in
+     reverse' new_acc ib_tail
+  in reverse' Empty ib_list
 
 (*----------------------------------------------------------------------------*]
  Funkcija [intbool_separate ib_list] loči vrednosti [ib_list] v par [list]
