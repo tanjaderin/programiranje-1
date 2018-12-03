@@ -5,6 +5,16 @@
  bodisi prazna, bodisi pa vsebujejo podatek in imajo dve (morda prazni)
  poddrevesi. Na tej točki ne predpostavljamo ničesar drugega o obliki dreves.
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
+type a' tree =
+    | Empty
+    | Node of a' tree * a' * a' tree
+
+let leaf list x = Node(Empty , x, Empty)
+
+(*type a' drevo =
+    | Empty
+    | Leaf a'
+    | Node of a' drevo * a' * a' drevo*)
 
 
 (*----------------------------------------------------------------------------*]
@@ -17,7 +27,10 @@
        /   / \
       0   6   11
 [*----------------------------------------------------------------------------*)
-
+let test_tree =
+    let left_t = Node leaf(0 , 2, Empty) in 
+    let right_t = Node(leaf 6, 7 leaf 11) in
+    Node (left_t, 5, right_t)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [mirror] vrne prezrcaljeno drevo. Na primeru [test_tree] torej vrne
@@ -32,6 +45,10 @@
  Node (Node (Node (Empty, 11, Empty), 7, Node (Empty, 6, Empty)), 5,
  Node (Empty, 2, Node (Empty, 0, Empty)))
 [*----------------------------------------------------------------------------*)
+let rec mirror tree =
+    match tree with
+        | Empty -> Empty
+        | Node (lt, x, rt) -> Node(mirror rt, x, mirror lt)
 
 
 (*----------------------------------------------------------------------------*]
@@ -43,7 +60,26 @@
  # size test_tree;;
  - : int = 6
 [*----------------------------------------------------------------------------*)
+let rec size = function
+| Empty -> 0
+| Node (lt, x, rt) -> 1+ size le + size rt
 
+let size_repno tree =
+    let rec size' acc vrsta =
+    (*pogledamo kateri el naslednji v vrsti*)
+        match vrsta with
+        | [] -> acc 
+        | t :: ts -> (
+            match t with
+            | Empty -> size acc ts (*prezno odstranimo iz vrste*)
+            | Node(lt ,x ,rt) -> size' (acc + 1) (lt :: rt :: ts)
+(*obravnavamo vozlisce in dodamo poddreves v vrsto*)
+        )
+    in size' 0  tree
+
+let rec height =  function
+| Empty -> 0
+| Node (lt, x, rt) -> 1 + max size lt size rt
 
 (*----------------------------------------------------------------------------*]
  Funkcija [map_tree f tree] preslika drevo v novo drevo, ki vsebuje podatke
@@ -54,7 +90,9 @@
  Node (Node (Node (Empty, false, Empty), false, Empty), true,
  Node (Node (Empty, true, Empty), true, Node (Empty, true, Empty)))
 [*----------------------------------------------------------------------------*)
-
+let map_tree f tree = function
+    | Empty -> Empty
+    | Node(lt, x, rt) -> Node(map_tree f lt, f x, map_tree f rt)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [list_of_tree] pretvori drevo v seznam. Vrstni red podatkov v seznamu
@@ -63,8 +101,9 @@
  # list_of_tree test_tree;;
  - : int list = [0; 2; 5; 6; 7; 11]
 [*----------------------------------------------------------------------------*)
-
-
+let rec list_of_tree tree =
+    | Empty -> Empty
+    | Node(lt, x, rt) ->
 (*----------------------------------------------------------------------------*]
  Funkcija [is_bst] preveri ali je drevo binarno iskalno drevo (Binary Search 
  Tree, na kratko BST). Predpostavite, da v drevesu ni ponovitev elementov, 
@@ -75,7 +114,9 @@
  # test_tree |> mirror |> is_bst;;
  - : bool = false
 [*----------------------------------------------------------------------------*)
-
+let is_bst tree = function
+    |Empty -> true
+    |Node(lt, x, rt) ->
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  V nadaljevanju predpostavljamo, da imajo dvojiška drevesa strukturo BST.
