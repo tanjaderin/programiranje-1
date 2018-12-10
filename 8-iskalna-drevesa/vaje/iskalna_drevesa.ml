@@ -101,9 +101,9 @@ let map_tree f tree = function
  # list_of_tree test_tree;;
  - : int list = [0; 2; 5; 6; 7; 11]
 [*----------------------------------------------------------------------------*)
-let rec list_of_tree tree =
+let rec list_of_tree tree = function
     | Empty -> Empty
-    | Node(lt, x, rt) ->
+    | Node(lt, x, rt) -> list_of_tree lt @ [x] @ list_of_tree rt
 (*----------------------------------------------------------------------------*]
  Funkcija [is_bst] preveri ali je drevo binarno iskalno drevo (Binary Search 
  Tree, na kratko BST). Predpostavite, da v drevesu ni ponovitev elementov, 
@@ -131,7 +131,15 @@ let is_bst tree = function
  # member 3 test_tree;;
  - : bool = false
 [*----------------------------------------------------------------------------*)
+let insert y tree =
+    match tree with
+    |Empty -> leaf tree y
+    |Node(lt, x, rt) -> if x < y insert y rt else insert y lt
 
+let member y tree =
+    match tree with
+    | Empty -> false
+    | Node(lt, x, rt) -> if x = y then true if x < y member y rt else member y lt
 
 (*----------------------------------------------------------------------------*]
  Funkcija [member2] ne privzame, da je drevo bst.
@@ -154,6 +162,23 @@ let is_bst tree = function
  - : int option = None
 [*----------------------------------------------------------------------------*)
 
+let mint tree =
+    | Empty -> None
+    | Node (Empty ,x, _)-> Some x
+    | Node(lt, _, _) ->  mint lt
+
+let succ bst = function
+    |Empty ->
+    |Node (_, _ , rt) -> mint rt
+
+let maxt tree =
+    | Empty -> None
+    | Node (_ ,x,Empty)-> Some x
+    | Node(_, _, rt) ->  maxt rt
+    
+let pred bst = function
+    |Epty ->
+    |Node (lt, _, _) -> maxt lt
 
 (*----------------------------------------------------------------------------*]
  Na predavanjih ste omenili dva načina brisanja elementov iz drevesa. Prvi 
@@ -168,8 +193,23 @@ let is_bst tree = function
  Node (Node (Empty, 6, Empty), 11, Empty))
 [*----------------------------------------------------------------------------*)
 
+let rec delete x bst =
+    match bst withe
+    |Empty -> Empty
+    |Node(Empty, y, Empty)-> if x = y then Empty else tree
+    |Node(Empty, y, rt) when x = y -> rt
+    |Node(lt, y, Empty) when x = y -> lt
+    |Node (lt, x, rt) when x <> y -> 
+        if x > y then 
+            Node(lt, y, delete x rt)
+        else
+            Node (delete x lt, y, rt)
+    |Node (lt, x, rt) ->
+        match succ tree with
+        |None failwith "nemogoce"
+        |Some z -> Node(lt, z, delete z rt)
 
-(*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
+(*-=-=-=-=-=-=-=-=-=-=-n x <> y =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  SLOVARJI
 
  S pomočjo BST lahko (zadovoljivo) učinkovito definiramo slovarje. V praksi se
@@ -180,7 +220,9 @@ let is_bst tree = function
  vrednosti, ga parametriziramo kot [('key, 'value) dict].
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
 
-
+type k v dict = 
+    | Empty
+    | Node of (k * v) dict * (k * v) * (k * v) dict
 (*----------------------------------------------------------------------------*]
  Napišite testni primer [test_dict]:
       "b":1
@@ -190,6 +232,8 @@ let is_bst tree = function
      "c":-2
 [*----------------------------------------------------------------------------*)
 
+let test_dict =
+    Node ((a,0), (b,1), Node((c,2), (d,2), Empty) )
 
 (*----------------------------------------------------------------------------*]
  Funkcija [dict_get key dict] v slovarju poišče vrednost z ključem [key]. Ker
@@ -200,7 +244,11 @@ let is_bst tree = function
  # dict_get "c" test_dict;;
  - : int option = Some (-2)
 [*----------------------------------------------------------------------------*)
-
+let rec dict_get key dict =
+    match dict with
+    |Empty -> None
+    |Node (_, (k, v), _) when k = key -> some v 
+    |Node (lt , (k, v), _) when = key -> dict_get key lt 
       
 (*----------------------------------------------------------------------------*]
  Funkcija [print_dict] sprejme slovar s ključi tipa [string] in vrednostmi tipa
