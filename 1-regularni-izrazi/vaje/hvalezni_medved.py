@@ -29,12 +29,9 @@ medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn"."""
 # {'izdere', 'debel', 'oddide', 'začudeno'}
 ###############################################################################
 def find_words(niz, podniz):
-    besede = set()
     vzorec = r'\b\w*' + podniz + r'\w*\b'
-    for ujemanje in re.finditer(vzorec, niz):
-        a = ujemanje.group(0)       
-        besede.add(a)
-    return besede
+    seznam = re.findall(vzorec, niz)
+    return set(seznam)
 
     
 ###############################################################################
@@ -76,9 +73,6 @@ def find_suffix(niz, pripona):
 # {'volunteer', 'pressed'}
 ###############################################################################
 def double_letters(niz):
-    besede = set()
     vzorec = r'\b\w*(\w)\1\w*\b'
-    for ujemanje in re.finditer(vzorec, niz):
-        a = ujemanje.group(0)       
-        besede.add(a)
-    return besede
+    ujemanje = re.finditer(vzorec, niz)
+    return set(j[0] for j in ujemanje)
