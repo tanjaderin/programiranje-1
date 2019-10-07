@@ -4,21 +4,11 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "OCaml",
-            "type": "shell",
-            "command":
-             "Ocaml ",
+          "label": "Python",
+          "type": "shell",
+          "command": "python -i \\\"${file}\\\""
             
-            "args": [
-                "-init"
-            
-              {
-            
-                "value": "${file}",
-            
-                "quoting": "escape"
-            
-              }
-            
+          
+          }
             ]
 }
