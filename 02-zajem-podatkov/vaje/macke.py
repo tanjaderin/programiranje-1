@@ -88,8 +88,16 @@ def get_dict_from_ad_block(block):
     """Funkcija iz niza za posamezen oglasni blok izlušči podatke o imenu, ceni
     in opisu ter vrne slovar, ki vsebuje ustrezne podatke
     """
-    vzorec = r'<table><tr><td><a title="(?P<ime>.+?)" .*?<div class="price">(?P<cena>.+?)</div>.*?</h3>(?P<opis>.*?)</div>'
-    return re.search(vzorec, block, re.DOTALL).groupdict()
+    rx = re.compile(r'title="(?P<name>.*?)"'
+                    r'.*?</h3>\s*(?P<description>.*?)\s*</?div'
+                    r'.*?class="price">(<span>)?(?P<price>.*?)'
+                    r'( €</span>)?</div',
+                    re.DOTALL)
+    data = re.search(rx, block)
+    ad_dict = data.groupdict()
+    return ad_dict
+
+
 
 # Definirajte funkcijo, ki sprejme ime in lokacijo datoteke, ki vsebuje
 # besedilo spletne strani, in vrne seznam slovarjev, ki vsebujejo podatke o
@@ -102,6 +110,18 @@ def ads_from_file(filename, directory):
     content = read_file_to_string(cat_directory, frontpage_filename)
     ads = page_to_ads(content)
     return [get_dict_from_ad_block(block) for block in ads if block]
+
+def ads_from_file(filename, directory):
+    """Funkcija prebere podatke v datoteki "directory"/"filename" in jih
+   pretvori (razčleni) v pripadajoč seznam slovarjev za vsak oglas posebej."""
+    page = read_file_to_string(filename, directory)
+    blocks = page_to_ads(page)
+    ads = [get_dict_from_ad_block(block) for block in blocks]
+    return ads
+
+
+def ads_frontpage():
+    return ads_from_file(cat_directory, frontpage_filename)
 
 
 ###############################################################################
@@ -121,7 +141,7 @@ def write_csv(fieldnames, rows, directory, filename):
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
-    return
+    return None
 
 
 # Definirajte funkcijo, ki sprejme neprazen seznam slovarjev, ki predstavljajo
@@ -133,14 +153,13 @@ def write_cat_ads_to_csv(ads, directory, filename):
     """Funkcija vse podatke iz parametra "ads" zapiše v csv datoteko podano s
     parametroma "directory"/"filename". Funkcija predpostavi, da sa ključi vseh
     sloverjev parametra ads enaki in je seznam ads neprazen.
-
     """
     # Stavek assert preveri da zahteva velja
     # Če drži se program normalno izvaja, drugače pa sproži napako
     # Prednost je v tem, da ga lahko pod določenimi pogoji izklopimo v
     # produkcijskem okolju
     assert ads and (all(j.keys() == ads[0].keys() for j in ads))
-    raise NotImplementedError()
+    write_csv(ads[0].keys(), ads, directory, filename)
 
 
 # Celoten program poženemo v glavni funkciji
@@ -152,21 +171,18 @@ def main(redownload=True, reparse=True):
     3. Podatke shrani v csv datoteko
     """
     # Najprej v lokalno datoteko shranimo glavno stran
-    save_frontpage(cats_frontpage_url, cat_directory, frontpage_filename)
+    save_frontpage(cat_directory, frontpage_filename)
 
     # Iz lokalne (html) datoteke preberemo podatke
-    content = read_file_to_string(cat_directory, frontpage_filename)
-    print(page_to_ads(content)[-1])
-
+    ads = page_to_ads(read_file_to_string(cat_directory, frontpage_filename))
     # Podatke prebermo v lepšo obliko (seznam slovarjev)
-
+    ads_nice = [get_dict_from_ad_block(ad) for ad in ads]
     # Podatke shranimo v csv datoteko
+    write_cat_ads_to_csv(ads_nice, cat_directory, csv_filename)
 
     # Dodatno: S pomočjo parameteov funkcije main omogoči nadzor, ali se
     # celotna spletna stran ob vsakem zagon prense (četudi že obstaja)
     # in enako za pretvorbo
-
-    
 
 
 if __name__ == '__main__':
