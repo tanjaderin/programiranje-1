@@ -169,11 +169,9 @@ let rec divide k seznam =
  - : int list = [3; 4; 5; 1; 2]
 [*----------------------------------------------------------------------------*)
 
-let rec rotate n seznam =
-  match n, seznam with
-  | _, [] -> []
-  | 0, x :: xs -> x :: xs
-  | n, x :: xs -> rotate n - 1 xs @ [x]
+let rec rotate n list =
+  let (list1, list2) = divide n list in
+  list2 @ list1
 
 (*----------------------------------------------------------------------------*]
  Funkcija [remove x list] iz seznama izbriše vse pojavitve elementa [x].
@@ -203,10 +201,8 @@ let rec obrni seznam =
   | x :: xs -> (obrni xs) :: x :: []
 
 let rec is_palindrome seznam =
-  match seznam with
-  | [] -> true
-  | _  when seznam = obrni seznam -> true
-  | _ -> false
+  let obrnjen = obrni seznam in
+  seznam = obrnjen
 
 (*----------------------------------------------------------------------------*]
  Funkcija [max_on_components] sprejme dva seznama in vrne nov seznam, katerega
@@ -217,7 +213,11 @@ let rec is_palindrome seznam =
  - : int list = [5; 4; 3; 3; 4]
 [*----------------------------------------------------------------------------*)
 
-let rec max_on_components = ()
+let rec max_on_components sez1 sez2 =
+  match (sez1, sez2) with
+  | (x :: xs, y :: ys) -> max x,y :: max_on_components xs ys
+  | _ -> []
+
 
 (*----------------------------------------------------------------------------*]
  Funkcija [second_largest] vrne drugo največjo vrednost v seznamu. Pri tem se
@@ -228,8 +228,30 @@ let rec max_on_components = ()
  # second_largest [1; 10; 11; 11; 5; 4; 10];;
  - : int = 10
 [*----------------------------------------------------------------------------*)
+let rec najvecje sez =
+  match sez with
+  |[] -> failwith "napaka"
+  |[n] -> n
+  |x :: xs -> max x najvecje xs
 
-let rec second_largest = ()
+let rec second_largest seznam =
+  match seznam with
+  |[] -> failwith "napaka"
+  |[x, y] ->  min x, y
+  let sez_brez_najvecjih = function
+    | [] -> []
+    | [a] -> []
+    | x :: xs -> if najvecje x :: xs = x then sez_brez_najvecjih xs else x :: sez_brez_najvecjih xs
+  in
+  najvecje sez_brez_najvecjih seznam
+
+  let second_largest list =
+    let rec largest = function
+      | [] -> failwith "List is too short."
+      | x :: [] -> x
+      | x :: xs -> max x (largest xs)
+    in
+    largest (delete (largest list) list)
 
 
 (*let rec delete k seznam = 
