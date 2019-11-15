@@ -52,10 +52,14 @@ let has_zero tree=
 type euro  = Euro of float
 type dollar = Dollar of float
 
-let dollar_to_euro_fake dolar = 0.2 *. dolar
-let dollar_to_euro_legit dollar = 
+let dollar_to_euro_fake dollar = 0.2 *. dollar
+let dollar_to_euro dollar = 
   match dollar with 
   |Dollar v ->Euro(0.2*. v)
+
+let euro_to_dollar euro =
+  match euro with
+  | Euro e -> Dollar(e *. 1.2 )
 
 (*----------------------------------------------------------------------------*]
  Definirajte tip [currency] kot en vsotni tip z konstruktorji za jen, funt
@@ -73,12 +77,14 @@ type currency =
   |Yen of float
   |Pound of float
   |Krona of float
+  |Franki of float
 
-let to_pound c =
-  match c with
-   |Yen y -> Pound (1. *.y)
+let to_pound currency =
+  match currency with
+   |Yen y -> Pound (1. *. y)
    |Pound y -> Pound y
-   |Krona y -> Krona(0.3 *.y)
+   |Krona y -> Pound(0.3 *.y)
+   |Franki y -> Pound(1.2 *. y)
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  Želimo uporabljati sezname, ki hranijo tako cela števila kot tudi logične
@@ -91,11 +97,13 @@ let to_pound c =
  x :: xs v Ocamlu).
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
 
-(*type celo = 
+type celo_ali_znak =
+  |Logicna of bool
+  |Celo of int
 
-type 'a seznam =
+type 'celo_ali_znak seznam =
   | Prazen
-  | Sestavljen of 'a * 'a seznam*)
+  | Sestavljen of 'celo_ali_znak * 'celo_ali_znak seznam *)
 (*----------------------------------------------------------------------------*]
  Definirajte tip [intbool_list] z konstruktorji za:
   1.) prazen seznam,
@@ -106,31 +114,26 @@ type 'a seznam =
 [*----------------------------------------------------------------------------*)
 
 (*let rec intbool_map(f_int : int -> int)(f_bool : bool->bool) = function*)
-
+(*
 let rec map f = function
 |[] ->  []
-|x:: xs -> f x :: map xs
+|x:: xs -> f x :: map xs*)
 
 type intbool_list =
   | Empty
   | Intval of int * intbool_list
   | Boolval of bool * intbool_list
 
-let rec intbool_map(f_int : int -> int)(f_bool : bool->bool) = function
-| Empty -> Empty
-| Intval () of int * intbool_list
-| Boolval of bool * intbool_list
-
-
-
-
-  let Intval(5, Boolval(true,(Boolval(false Intval 7))))
+let Intval(5, Boolval(true,(Boolval(false Intval 7))))
 (*----------------------------------------------------------------------------*]
  Funkcija [intbool_map f_int f_bool ib_list] preslika vrednosti [ib_list] v nov
  [intbool_list] seznam, kjer na elementih uporabi primerno od funkcij [f_int]
  oz. [f_bool].
 [*----------------------------------------------------------------------------*)
-
+(*let rec intbool_map(f_int : int -> int)(f_bool : bool->bool) = function
+| Empty -> Empty
+| Intval () of int * intbool_list
+| Boolval of bool * intbool_list
 
 
 
@@ -249,3 +252,4 @@ let rec count_magic = ()
 [*----------------------------------------------------------------------------*)
 
 let rec find_candidate = ()
+*)
