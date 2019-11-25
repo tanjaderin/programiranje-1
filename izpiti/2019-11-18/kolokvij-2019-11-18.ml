@@ -34,6 +34,9 @@ type vrsta_srecanja =
 
 type srecanje = { predmet = string; vrsta = vrsta_srecanja; trajanje = int}
 
+
+type urnik = (srecanje list) list
+
 type urnik =
     | Prazno
     | Srecanje of string * vrsta_srecanja * int
