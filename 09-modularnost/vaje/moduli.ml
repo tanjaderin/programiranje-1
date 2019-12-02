@@ -49,13 +49,16 @@
 [*----------------------------------------------------------------------------*)
 
 module type NAT = sig
-  type t
+  type t (*glavni tip modula not bo imel vrednost*)
 
   val eq   : t -> t -> bool
   val zero : t
+  val zmnozi : t -> t -> t
+  val sestej : t -> t -> t
+  val odstej:  t -> t -> t
   (* Dodajte manjkajoče! *)
-  (* val to_int : t -> int *)
-  (* val of_int : int -> t *)
+  val to_int : t -> int
+  val of_int : int -> t (*iz skatle v skatlo *)
 end
 
 (*----------------------------------------------------------------------------*]
@@ -70,8 +73,13 @@ end
 module Nat_int : NAT = struct
 
   type t = int
-  let eq x y = failwith "later"
+  let eq x y = x = y
   let zero = 0
+  let zmnozi  = ( * ) (* x * y *)
+  let sestej  = (+)
+  let odstej x y = max (x - y) 0
+  let to_int x = x
+  let of_int  x = x
   (* Dodajte manjkajoče! *)
 
 end
@@ -90,9 +98,41 @@ end
 
 module Nat_peano : NAT = struct
 
-  type t = unit (* To morate spremeniti! *)
-  let eq x y = failwith "later"
-  let zero = () (* To morate spremeniti! *)
+  type t = zero | Succ t (* To morate spremeniti! *)
+  let zero = Zero
+  let one = Succ zero 
+
+  
+  let rec eq x y =
+    match (x, y) with
+    |(Zero, Zero) -> true
+    | (Succx, Succ y) -> eq x y
+    | _ -> false
+
+  let rec sestej x y =
+    match x y with
+    | x 0 -> x
+    | 0 y -> y
+    | x  (Succ y') -> Succ(sestej x y')
+
+  let rec zmnozi x y =
+    match x y with
+    | x 0 -> 0
+    |0 y -> 0
+    |x (Succ y' )-> x + Succ(zmnozi x  y')
+
+    let rec odstej x y =failwith "koncaj"
+
+  let rec to_int x =
+  match x with
+    | Zero -> 0
+    | Succ x -> Succ(to_int x)
+
+  let rec of_int n = 
+  match n with
+    | 0 -> Zero
+    | n when x > 0 -> Succ (of_int( n - 1))
+    | _ -> failwith " negativno stevilo"
   (* Dodajte manjkajoče! *)
 
 end
@@ -118,8 +158,10 @@ end
  - : int = 4950
 [*----------------------------------------------------------------------------*)
 
-let sum_nat_100 (module Nat : NAT) = ()
-
+let sum_nat_100 (module Nat : NAT) = 
+   let rec sum acc n =
+   if Nat.eq n (Nat.of_int 100) then acc else sum (Nat.sestej n acc) (Nat.sestej acc Nat.one n)
+   Nat.to_int (sum Nat.zero Nat.zero)
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  Now we follow the fable told by John Reynolds in the introduction.
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
@@ -133,7 +175,14 @@ let sum_nat_100 (module Nat : NAT) = ()
 module type COMPLEX = sig
   type t
   val eq : t -> t -> bool
-  (* Dodajte manjkajoče! *)
+  val zero : t
+  val one : t
+  val im : t
+  val zmnozi : t -> t -> t
+  val sestej : t -> t -> t
+  val negacija :  t -> t
+  val konjugacija :  t -> t
+
 end
 
 (*----------------------------------------------------------------------------*]
@@ -198,4 +247,4 @@ end
  - : unit = ()
 [*----------------------------------------------------------------------------*)
 
-let count (module Dict : DICT) list = ()
+let count (module Dict : DICT) list = () *)
