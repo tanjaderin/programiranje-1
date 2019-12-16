@@ -140,9 +140,23 @@ def zlij(target, begin, end, list_1, list_2):
             target[begin :end] == list_2[0: end - begin]
             return target
 
-        
-
-
+def zlij(target, begin, end, list_1, list_2):
+    i1 = 0
+    i2 = 0
+    while i1 < len(list_1) and i2 < len(list_2):
+        if list_1[i1]  <= list_2[i2]:
+            target[begin + i1 + i2] = listt[i1]
+            i1 +=1
+        else:
+            target[begin + i1 + i2] = listt[i2]
+            i2 +=1
+    while i1 < len(list_1):
+        target[begin + i1 + i2] = listt[i1]
+        i1 +=1
+    while i2 < len(list_2):
+        target[begin + i1 + i2] = listt[i2]
+        i1 +=2
+    
 
 ###############################################################################
 # Tabelo želimo urediti z zlivanjem (merge sort). 
