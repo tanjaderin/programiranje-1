@@ -1,0 +1,65 @@
+let plus_two = (fun x -> x + 2) in
+   map_tlrec plus_two [0; 1; 2; 3; 4];;
+
+###################
+let rec unzip_tlrec = function
+    | [] -> ([], [])
+    | (x, y) :: xs -> let (sez1 , sez2) = unzip_tlrec xs in ( (x :: sez1); (y :: sez2))
+
+
+###################
+type magic_counter =  { fire: int; frost: int; arcane: int}
+
+let update stevec = function
+  |Fire -> {stevec with fire = stevec.fire + 1 }
+  |Frost -> {stevec with frost = stevec.frost + 1 }
+  |Arcane -> {stevec with arcane = stevec.arcane + 1 }
+
+#######################
+ type 'a tree =
+    | Empty
+    | Node of 'a tree * 'a * 'a tree
+
+let leaf x = Node(Empty, x, Empty)
+
+let test_tree =
+    let left_t = Node (leaf 0, 2, Empty) in 
+    let right_t = Node(leaf 6, 7, leaf 11) in
+    Node (left_t, 5, right_t)
+
+let rec list_of_tree = function
+    | Empty -> []
+    | Node(lt, x, rt) -> list_of_tree lt @ [x] @ list_of_tree rt
+
+let size_repno tree =
+    let rec size' acc vrsta =
+    (*pogledamo kateri el naslednji v vrsti*)
+        match vrsta with
+        | [] -> acc 
+        | t :: ts -> (
+            match t with
+            | Empty -> size' acc ts (*prezno odstranimo iz vrste*)
+            | Node(lt ,x ,rt) -> size' (acc + 1) (lt :: rt :: ts)
+(*obravnavamo vozlisce in dodamo poddreves v vrsto*)
+        )
+    in size' 0  tree
+
+let rec delete x = function
+    | Empty -> Empty
+    | Node(l, y, r) when x > y -> Node(l, y, delete x r)
+    | Node(l, y, r) when x < y -> Node(delete x l, y, r)
+    | Node(l, y, r) as bst -> (
+        (*Potrebno je izbrisati vozlišče.*)
+        match succ bst with
+        | None -> l (*To se zgodi le kadar je [r] enak [Empty].*)
+        | Some s ->
+             let clean_r = delete s r in
+             Node(l, s, clean_r))
+
+
+let rec print = function
+    | D_Empty -> ()
+    | D_Node (d_l, k, v, d_r) -> (
+      print d_l;
+      print_string (k ^ " : "); print_int v; print_string "\n";
+      print d_r)

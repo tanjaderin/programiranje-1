@@ -49,14 +49,14 @@
 [*----------------------------------------------------------------------------*)
 
 module type NAT = sig
-  type t (*glavni tip modula not bo imel vrednost*)
+  type t 
 
   val eq   : t -> t -> bool
   val zero : t
+  val one : t
   val zmnozi : t -> t -> t
   val sestej : t -> t -> t
   val odstej:  t -> t -> t
-  (* Dodajte manjkajoče! *)
   val to_int : t -> int
   val of_int : int -> t (*iz skatle v skatlo *)
 end
@@ -75,6 +75,7 @@ module Nat_int : NAT = struct
   type t = int
   let eq x y = x = y
   let zero = 0
+  let one = 1
   let zmnozi  = ( * ) (* x * y *)
   let sestej  = (+)
   let odstej x y = max (x - y) 0
@@ -98,7 +99,8 @@ end
 
 module Nat_peano : NAT = struct
 
-  type t = zero | Succ t (* To morate spremeniti! *)
+  type t = Zero | Succ of t
+  
   let zero = Zero
   let one = Succ zero 
 
@@ -106,34 +108,38 @@ module Nat_peano : NAT = struct
   let rec eq x y =
     match (x, y) with
     |(Zero, Zero) -> true
-    | (Succx, Succ y) -> eq x y
+    |(Succ x, Succ y) -> eq x y
     | _ -> false
 
   let rec sestej x y =
-    match x y with
-    | x 0 -> x
-    | 0 y -> y
-    | x  (Succ y') -> Succ(sestej x y')
+    match (x, y) with
+    | (x, Zero) -> x
+    | (Zero, y )-> y
+    | (x,  Succ y') -> Succ(sestej x y')
 
   let rec zmnozi x y =
     match x y with
-    | x 0 -> 0
-    |0 y -> 0
-    |x (Succ y' )-> x + Succ(zmnozi x  y')
+    | x Zero -> Zero
+    |Zero y -> Zero
+    |x (Succ y' )-> sestej x Succ(zmnozi x  y')
 
-    let rec odstej x y =failwith "koncaj"
+  let rec odstej x y =
+    match x y with
+      |x Zero -> x
+      |Zero _ -> 0
+      |Succ x Succ y -> odstej x y
 
   let rec to_int x =
-  match x with
-    | Zero -> 0
-    | Succ x -> Succ(to_int x)
+    match x with
+      | Zero -> 0
+      | Succ x -> 1 + (to_int x)
 
   let rec of_int n = 
-  match n with
-    | 0 -> Zero
-    | n when x > 0 -> Succ (of_int( n - 1))
-    | _ -> failwith " negativno stevilo"
-  (* Dodajte manjkajoče! *)
+    match n with
+      | 0 -> 0
+      | n  -> Succ (of_int( n - 1))
+      | _ -> 0
+
 
 end
 
@@ -160,8 +166,9 @@ end
 
 let sum_nat_100 (module Nat : NAT) = 
    let rec sum acc n =
-   if Nat.eq n (Nat.of_int 100) then acc else sum (Nat.sestej n acc) (Nat.sestej acc Nat.one n)
-   Nat.to_int (sum Nat.zero Nat.zero)
+   if Nat.eq n (Nat.of_int 100) then acc else sum (Nat.sestej n acc) (Nat.sestej Nat.one n)
+   in
+   sum Nat.zero Nat.zero |> Nat.to_int 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  Now we follow the fable told by John Reynolds in the introduction.
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
@@ -194,8 +201,20 @@ module Cartesian : COMPLEX = struct
 
   type t = {re : float; im : float}
 
-  let eq x y = failwith "later"
-  (* Dodajte manjkajoče! *)
+  let eq x y =
+    x.re = y.re && x.im = y.im 
+
+  let zero = {re = 0; im = 0 }
+  let one = {re = 1; im = 0 }
+  let im = {re = 0; im = 1 }
+  
+  let sestej x y = {re = re.x + re.y ; im = im.x + im.y}
+  let zmnozi x y = {re = re.x * re.y - im.x * im.y  ; im = re.x *im.y + im.x * re.y}
+
+  let negacija x = {re = - re.x ; im = - im.x }
+  let konjugacija x  = {re = re.x ; im = - im.x}
+
+    (* Dodajte manjkajoče! *)
 
 end
 
@@ -234,6 +253,51 @@ end
  Modul naj vsebuje prazen slovar [empty] in pa funkcije [get], [insert] in
  [print] (print naj ponovno deluje zgolj na [(string, int) t].
 [*----------------------------------------------------------------------------*)
+module type DICT = sig
+  type ('key, 'value) t
+
+  val empty : ('key, 'value) t
+
+  val get : 'key -> ('key, 'value) t -> 'value option
+  val insert : 'key -> 'value -> ('key, 'value) t -> ('key, 'value) t
+  val print : (string, int) t -> unit
+end
+
+module Tree_dict : DICT = struct
+  type ('key, 'value) t =
+    | D_Empty
+    | D_Node of ('key, 'value) t * 'key * 'value * ('key, 'value) t
+
+  let empty = D_Empty
+
+  let d_leaf key value = D_Node (D_Empty, key, value, D_Empty)
+
+  let rec get key = function
+    | D_Empty -> None
+    | D_Node (d_l, k, value, d_r) ->
+      if k = key then
+        Some value
+      else if key < k then get key d_l else get key d_r
+
+  let rec insert key value = function
+    | D_Empty -> d_leaf key value
+    | D_Node (d_l, k, v, d_r) ->
+      if k = key then
+        D_Node (d_l, k, value, d_r)
+      else if key < k then
+        D_Node (insert key value d_l, k, v, d_r)
+      else
+        D_Node (d_l, k, v, insert key value d_r)
+
+  let rec print = function
+    | D_Empty -> ()
+    | D_Node (d_l, k, v, d_r) -> (
+      print d_l;
+      print_string (k ^ " : "); print_int v; print_string "\n";
+      print d_r)
+
+end
+
 
 
 (*----------------------------------------------------------------------------*]

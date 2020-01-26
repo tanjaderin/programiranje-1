@@ -12,12 +12,6 @@ type 'a tree =
 
 let leaf x = Node(Empty, x, Empty)
 
-(*type a' drevo =
-    | Empty
-    | Leaf a'
-    | Node of a' drevo * a' * a' drevo*)
-
-
 (*----------------------------------------------------------------------------*]
  Definirajmo si testni primer za preizkušanje funkcij v nadaljevanju. Testni
  primer predstavlja spodaj narisano drevo, pomagamo pa si s pomožno funkcijo
@@ -29,9 +23,11 @@ let leaf x = Node(Empty, x, Empty)
       0   6   11
 [*----------------------------------------------------------------------------*)
 let test_tree =
-    let left_t = Node (leaf 0 , 2, Empty) in 
+    let left_t = Node (leaf 0, 2, Empty) in 
     let right_t = Node(leaf 6, 7, leaf 11) in
     Node (left_t, 5, right_t)
+
+let test = Node(Node(Node(Empty, 0, Empty), 2, Empty), 5, Node(Node(Empty, 6, Empty), 7, Node(Empty, 11, Empty)))
 
 (*----------------------------------------------------------------------------*]
  Funkcija [mirror] vrne prezrcaljeno drevo. Na primeru [test_tree] torej vrne
@@ -163,9 +159,9 @@ let is_bst'=
 let rec insert y tree =
     match tree with
     |Empty -> leaf y
-    |Node(lt, x, rt) -> if x < y then Node (lt, x, insert y rt) else Node(insert y lt, x, lt)
     |Node(lt, x, rt) when x = y -> Node(lt, y, rt)
-
+    |Node(lt, x, rt) -> if x < y then Node (lt, x, insert y rt) else Node(insert y lt, x, lt)
+    
 let rec member y tree =
     match tree with
     | Empty -> false
@@ -192,35 +188,29 @@ let member2 y bst = List.mem y (list_of_tree bst)
  # pred (Node(Empty, 5, leaf 7));;
  - : int option = None
 [*----------------------------------------------------------------------------*)
-let succ bst = 
-    let rec minn = function
-    | Empty -> None
-    | Node(Empty, x, _) -> Some xs
-    | Node(lt,_,_) -> minn lt
+
+let succ bst =
+    let rec najmanjsi = function
+        |Empty -> None
+        |Node(Empty, x, _) -> Some x
+        |Node(l, _, _) -> najmanjsi l
     in
     match bst with
     |Empty -> None
-    | Node(l,x,r) -> minn r
+    |Node(_, x, Empty) -> Some x
+    |Node(_, x, r) -> najmanjsi r
 
 
-let rec mint = function
-    | Empty -> None
-    | Node (Empty ,x, _)-> Some x
-    | Node(lt, _, _) ->  mint lt
-
-let rec succ bst = function
-    |Empty -> None
-    |Node (_, _ , rt) -> mint rt
-
-let rec maxt = function
-    | Empty -> None
-    | Node (_ ,x,Empty)-> Some x
-    | Node(_, _, rt) ->  maxt rt
-    
-let rec pred bst = function
+let rec pred bst =
+    let rec maxt = function
+        | Empty -> None
+        | Node (_ ,x,Empty)-> Some x
+        | Node(_, _, rt) -> maxt rt
+    in
+    match bst with     
     |Empty -> None
     |Node (lt, _, _) -> maxt lt
-(*
+
 (*----------------------------------------------------------------------------*]
  Na predavanjih ste omenili dva načina brisanja elementov iz drevesa. Prvi 
  uporablja [succ], drugi pa [pred]. Funkcija [delete x bst] iz drevesa [bst] 
@@ -234,21 +224,17 @@ let rec pred bst = function
  Node (Node (Empty, 6, Empty), 11, Empty))
 [*----------------------------------------------------------------------------*)
 
-let rec delete x bst =
-    match bst withe
-    |Empty -> Empty
-    |Node(Empty, y, Empty)-> if x = y then Empty else tree
-    |Node(Empty, y, rt) when x = y -> rt
-    |Node(lt, y, Empty) when x = y -> lt
-    |Node (lt, x, rt) when x <> y -> 
-        if x > y then 
-            Node(lt, y, delete x rt)
-        else
-            Node (delete x lt, y, rt)
-    |Node (lt, x, rt) ->
-        match succ tree with
-        |None failwith "nemogoce"
-        |Some z -> Node(lt, z, delete z rt)
+let rec delete x = function
+    | Empty -> Empty
+    | Node(l, y, r) when x > y -> Node(l, y, delete x r)
+    | Node(l, y, r) when x < y -> Node(delete x l, y, r)
+    | Node(l, y, r) as bst -> (
+        (*Potrebno je izbrisati vozlišče.*)
+        match succ bst with
+        | None -> l (*To se zgodi le kadar je [r] enak [Empty].*)
+        | Some s ->
+             let clean_r = delete s r in
+             Node(l, s, clean_r))
 
 (*-=-=-=-=-=-=-=-=-=-=-n x <> y =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  SLOVARJI
@@ -260,7 +246,7 @@ let rec delete x bst =
  strukturo glede na ključe. Ker slovar potrebuje parameter za tip ključa in tip
  vrednosti, ga parametriziramo kot [('key, 'value) dict].
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
-
+(*
 type k v dict = 
     | Empty
     | Node of (k * v) dict * (k * v) * (k * v) dict

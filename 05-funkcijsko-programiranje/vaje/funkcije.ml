@@ -72,7 +72,7 @@ let rec map_tlrec f xs =
     | [] -> acc
     | x :: xs' -> map' (f x :: acc) f xs'
   in
-  map' f xs []
+  map' [] f xs
 
 (*----------------------------------------------------------------------------*]
  Funkcija [mapi] je ekvivalentna python kodi:
@@ -116,8 +116,7 @@ let rec zip xs ys =
   match (xs, ys) with
   | [], [] -> acc
   | x :: xs', y :: ys' -> zip' ((x, y):: acc) xs' ys'
-  | [], _ -> failwith "Different lengths of input lists."
-  | _, [] -> failwith "Different lengths of input lists."
+  | [], _ | _, []-> failwith "Different lengths of input lists."
   in 
   zip' [] xs ys
 
@@ -145,8 +144,9 @@ let rec unzip sez =
  - : int list * string list = ([0; 1; 2], ["a"; "b"; "c"])
 [*----------------------------------------------------------------------------*)
 
-let rec unzip_tlrec = ()
-
+let rec unzip_tlrec = function
+    | [] -> ([], [])
+    | (x, y) :: xs -> let (sez1 , sez2) = unzip_tlrec xs in ( (x :: sez1), (y :: sez2))
 (*----------------------------------------------------------------------------*]
  Funkcija [loop condition f x] naj se izvede kot python koda:
 

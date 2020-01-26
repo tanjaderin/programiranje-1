@@ -96,15 +96,6 @@ let to_pound currency =
  [Nil] (oz. [] v Ocamlu) in pa konstruktorjem za člen [Cons(x, xs)] (oz.
  x :: xs v Ocamlu).
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
-(*)
-type celo_ali_znak =
-  |Logicna of bool
-  |Celo of int
-
-type 'celo_ali_znak seznam =
-  | Prazen
-  | Sestavljen of 'celo_ali_znak * 'celo_ali_znak seznam *) 
-
 (*----------------------------------------------------------------------------*]
  Definirajte tip [intbool_list] z konstruktorji za:
   1.) prazen seznam,
@@ -119,7 +110,7 @@ type intbool_list =
   | Int of int * intbool_list
   | Bool of bool * intbool_list
 
-let Int(5, Bool(true,(Bool(false Intval 7))))
+let test =  Int(5, Bool(true,(Bool(false,Int(7, Empty)))))
 (*----------------------------------------------------------------------------*]
  Funkcija [intbool_map f_int f_bool ib_list] preslika vrednosti [ib_list] v nov
  [intbool_list] seznam, kjer na elementih uporabi primerno od funkcij [f_int]
@@ -137,18 +128,6 @@ let rec intbool_map (f_int : int -> int)(f_bool : bool -> bool) = function
 | Bool (b , ib_list) -> Bool (f_bool b , intbool_map f_int f_bool ib_list)
 
 
-let rec intbool_map(f_int : int -> int)(f_bool : bool -> bool) = function
-| Empty -> Empty
-| Intval (i, ib_list) ->
-let new_i = f_int i in
-let new_tail = intbool_map f_int f_bool ib_list in
-Intval(new_i, new_tail)
-|Intbool (b , ib_list) ->
-let new_b = f_bool b in
-let new_tail = intbool_map f_int f_bool ib_list in
-Boolval (new_b, new_tail)
-
-
 (*----------------------------------------------------------------------------*]
  Funkcija [intbool_reverse] obrne vrstni red elementov [intbool_list] seznama.
  Funkcija je repno rekurzivna.
@@ -157,8 +136,8 @@ Boolval (new_b, new_tail)
 let rec intbool_reverse ib_list =
   let rec reverse' (acc : intbool_list) = function
    |Empty-> acc
-   |Int (i, ib_tail )-> reverse' Int(i, acc) ib_tail
-   |Bool(b, ib_tail)-> reverse' Boolval(b,acc) ib_tail
+   |Int(i, ib_tail)-> reverse' (Int(i, acc)) ib_tail
+   |Bool(b, ib_tail)-> reverse' (Bool(b, acc)) ib_tail
   in reverse' Empty ib_list
 
 (*----------------------------------------------------------------------------*]
@@ -172,7 +151,7 @@ let rec intbool_separate ib_sez =
     match ib_sez with
     | Empty -> (acc1, acc2)
     | Int (i, rep) -> loci' (Int(i, acc1)) acc2 rep
-    | Bool(b. rep) -> loci' acc1 (Boll(b, acc2)) rep
+    | Bool(b, rep) -> loci' acc1 (Bool(b, acc2)) rep
   in
   loci' Empty Empty (intbool_reverse ib_sez)
 
@@ -219,7 +198,7 @@ type status =
   | Student of magic * int
   | Employed of magic * specialisation
 
-  type wizard = { name = string; status = status}
+  type wizard = { name : string; status : status}
 
   let professor = {name = "Matija"; status = Employed(Fire, Teacher)}
 (*----------------------------------------------------------------------------*]
@@ -232,7 +211,7 @@ type status =
  # update {fire = 1; frost = 1; arcane = 1} Arcane;;
  - : magic_counter = {fire = 1; frost = 1; arcane = 2}
 [*----------------------------------------------------------------------------*)
-type magic_counter =  { fire; int, frost: int, arcane: int}
+type magic_counter =  { fire: int; frost: int; arcane: int}
 
 let update stevec = function
   |Fire -> {stevec with fire = stevec.fire + 1 }

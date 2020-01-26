@@ -112,6 +112,8 @@ let rec get k seznam =
   | k, x :: xs when k <=  0 -> x
   | k, x :: xs -> get (k-1) xs
 
+
+
 (*----------------------------------------------------------------------------*]
  Funkcija [double] podvoji pojavitve elementov v seznamu.
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
