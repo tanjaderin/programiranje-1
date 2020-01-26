@@ -27,6 +27,23 @@
 #     [10, 2, 0, 4, 11, 15, 17, 5, 18]
 ###############################################################################
 
+    
+def pivot(a, start, end) :
+    pivot = a[start]
+    levo = start
+    desno = end #start + end
+    while levo < desno:
+        if a[levo + 1] < pivot:
+            levo += 1
+        elif a[desno] >= pivot:
+            desno -= 1
+        else:
+            a[levo + 1], a[desno] = a[desno], a[levo+ 1]
+    a[start] = a[desno]
+    a[desno] = pivot
+    return desno
+
+
 
 
 ###############################################################################
@@ -43,7 +60,21 @@
 # element po velikosti. Funkcija sme spremeniti tabelo [a]. Cilj naloge je, da
 # jo rešite brez da v celoti uredite tabelo [a].
 ###############################################################################
+def  kth_element(a, k, start = 0 , end = None):
+    if end is None:
+        end = len(a) -1
+    elif pivot(a, 0, len (a) - 1 ) == k:
+        return a[k]
+    elif pivot(a, 0, len (a) - 1 ) > k:
+        return kth_element(a, k , start, pivot(a, 0, len (a)) )
+    else :
+        return kth_element(a, k - pivot(a, 0, len (a)), pivot(a, 0, len (a), end)
 
+
+#if pivot manjsi
+#desno
+#if pivot vecji
+ #levo
 
 
 ###############################################################################
@@ -59,6 +90,15 @@
 #     >>> quicksort(a)
 #     [2, 3, 4, 5, 10, 11, 15, 17, 18]
 ###############################################################################
+def quicksort_part(a, start = 0, end = None):
+    if end is None:
+       end = len(a) -1
+    if strat >= end:
+        return a
+    else:
+        x = pivot(a, start,end)
+        quicksort_part(a, start, x-1)
+        quicksort_part(a, x +1, end)
 
 
 
@@ -70,22 +110,53 @@
 # 
 # Funkcija naj deluje v času O(n), kjer je n dolžina tarčne tabele.
 # 
-# Sestavite funkcijo [zlij(target, list_1, list_2)], ki v tabelo [target] zlije
-# tabeli [list_1] in [list_2]. V primeru, da sta elementa v obeh tabelah enaka,
-# naj bo prvi element iz prve tabele.
+# Sestavite funkcijo [zlij(target, begin, end, list_1, list_2)], ki v del 
+# tabele [target] med start in end zlije tabeli [list_1] in [list_2]. V primeru, 
+# da sta elementa v obeh tabelah enaka, naj bo prvi element iz prve tabele.
 # 
 # Primer:
 #  
 #     >>> list_1 = [1,3,5,7,10]
 #     >>> list_2 = [1,2,3,4,5,6,7]
 #     >>> target = [-1 for _ in range(len(list_1) + len(list_2))]
-#     >>> zlij(target, list_1, list_2)
+#     >>> zlij(target, 0, len(target), list_1, list_2)
 #     >>> target
 #     [1,1,2,3,3,4,5,5,6,7,7,10]
 #
 ###############################################################################
+def zlij(target, begin, end, list_1, list_2):
+    while begin < end:
+        while len(list_1) > 0 and len(list_2 ) > 0:
+            if list1[0] >= list2[0]:
+                target[begin] = list_1[0]
+                return zlij(target, begin + 1, end, list_1[1::], list_2)
+            else:
+                target[begin] = list_2[0]
+                return zlij(target, begin + 1, end, list_1, list_2[1::])
+        if len(list1) == 0:
+            target[begin :end] == list1[0: end - begin]
+            return target
+        else:
+            target[begin :end] == list_2[0: end - begin]
+            return target
 
-
+def zlij(target, begin, end, list_1, list_2):
+    i1 = 0
+    i2 = 0
+    while i1 < len(list_1) and i2 < len(list_2):
+        if list_1[i1]  <= list_2[i2]:
+            target[begin + i1 + i2] = listt[i1]
+            i1 +=1
+        else:
+            target[begin + i1 + i2] = listt[i2]
+            i2 +=1
+    while i1 < len(list_1):
+        target[begin + i1 + i2] = listt[i1]
+        i1 +=1
+    while i2 < len(list_2):
+        target[begin + i1 + i2] = listt[i2]
+        i1 +=2
+    
 
 ###############################################################################
 # Tabelo želimo urediti z zlivanjem (merge sort). 

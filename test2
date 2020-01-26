@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 let plus_two = (fun x -> x + 2) in
    map_tlrec plus_two [0; 1; 2; 3; 4];;
 
@@ -63,3 +64,18 @@ let rec print = function
       print d_l;
       print_string (k ^ " : "); print_int v; print_string "\n";
       print d_r)
+=======
+(* TESTING *)
+
+let leaf x = Node(Empty, x, Empty)
+
+let test1 =
+  let l = Node(leaf 3, 10, Node(leaf 14, 13, leaf 6)) in
+  let r = Node(leaf 2, 8, leaf 10) in
+  Node(l, 11, r)
+
+let test2 =
+  let l = Node(leaf 20, 10, Node(leaf 15, 9, leaf 6)) in
+  let r = Node(leaf 1, 4, leaf 10) in
+  Node(l, 7, r)
+>>>>>>> 603d1b53508be8ac4e94256d6b8dbdb4d80466c2
