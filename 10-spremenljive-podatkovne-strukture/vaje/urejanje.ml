@@ -11,6 +11,12 @@
 let rec randlist len max =
     if len <= 0 then [] else (Random.int max) :: randlist (len - 1) max
 
+let rendom len max =
+    let rec aux acc len max =
+        if len <= 0 then acc else aux ((Random.int max) :: acc) (len -1) max
+    in 
+    aux [] len max
+
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  Sedaj lahko s pomočjo [randlist] primerjamo našo urejevalno funkcijo (imenovana
  [our_sort] v spodnjem primeru) z urejevalno funkcijo modula [List]. Prav tako
@@ -62,6 +68,22 @@ let rec insert_sort xs =
  pojavitvijo elementa [z]. V primeru praznega seznama vrne [None]. 
 [*----------------------------------------------------------------------------*)
 let min_and_rest list =
+    let rec remove_one z = function
+      | [] -> failwith "not found"
+      | x :: xs -> if x = z then xs else x :: remove_one z xs
+    in
+    let rec find_min current_min = function
+      | [] -> current_min
+      | x :: xs -> find_min (min x current_min) xs
+    in
+    match list with
+    | [] -> None
+    | x :: xs ->
+       let z = find_min x xs in
+       Some (z, remove_one z (x :: xs))
+
+
+(* let min_and_rest list =
     let rec minl list =  
     match list with
     | [] -> None
@@ -74,8 +96,8 @@ let min_and_rest list =
     | x :: xs -> if x = najmanjsi then xs else x :: remove najmanjsi xs
     in 
     match list with
-    | [] -> [None]
-    | _ -> [Some( minl list, remove (minl list))]
+    | [] -> None
+    | _ -> Some( minl list, remove (minl list)) *)
 
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
@@ -95,6 +117,13 @@ let min_and_rest list =
  Funkcija [selection_sort] je implementacija zgoraj opisanega algoritma.
  Namig: Uporabi [min_and_rest] iz prejšnje naloge.
 [*----------------------------------------------------------------------------*)
+
+let selection_sort list =
+    let rec pomozna urejeni neurejeni = 
+        match min_and_rest neurejeni with
+        | None -> List.rev urejeni
+        | Some (x , ostalo) -> pomozna (x :: urejeni) ostalo
+    in pomozna [] list 
 
 
 
@@ -151,3 +180,16 @@ let index_min a lower upper=
  skupaj z [randlist].
 [*----------------------------------------------------------------------------*)
 
+let selection_sort_array a =
+    let index_end = Array.length a - 1 in
+    (* Every step moves boundary_sorted one place to the right. *)
+    for boundary_sorted = 0 to index_end do
+      let i = index_min a boundary_sorted index_end in
+      swap a i boundary_sorted
+    done
+  
+  let selection_sort_list list =
+    (* For testing purposes. *)
+    let a = Array.of_list list in
+    selection_sort_array a;
+    Array.to_list a

@@ -208,11 +208,14 @@ module Cartesian : COMPLEX = struct
   let one = {re = 1; im = 0 }
   let im = {re = 0; im = 1 }
   
-  let sestej x y = {re = re.x + re.y ; im = im.x + im.y}
-  let zmnozi x y = {re = re.x * re.y - im.x * im.y  ; im = re.x *im.y + im.x * re.y}
+  let neg {re; im} = {re = -. re; im = -. im}
+  let conj {re; im} = {re; im = -. im}
 
-  let negacija x = {re = - re.x ; im = - im.x }
-  let konjugacija x  = {re = re.x ; im = - im.x}
+  let add x y = {re = x.re +. y.re; im = x.im +. y.im}
+  let mul x y = 
+    let re = x.re *. y.re -. x.im *. y.im in
+    let im = x.im *. y.re +. x.re *. y.im in
+    {re; im}
 
     (* Dodajte manjkajoče! *)
 

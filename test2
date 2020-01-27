@@ -1,12 +1,20 @@
 <<<<<<< HEAD
+module type Linear = sig
+module Matrix : Linear = struct
+###################
+print_int hd; print_all tl
+###################
 let plus_two = (fun x -> x + 2) in
    map_tlrec plus_two [0; 1; 2; 3; 4];;
-
+##################
+List.exists v_uporabi ys
 ###################
 let rec unzip_tlrec = function
     | [] -> ([], [])
     | (x, y) :: xs -> let (sez1 , sez2) = unzip_tlrec xs in ( (x :: sez1); (y :: sez2))
-
+###################
+let rec randlist len max =
+    if len <= 0 then [] else (Random.int max) :: randlist (len - 1) max
 
 ###################
 type magic_counter =  { fire: int; frost: int; arcane: int}
@@ -64,6 +72,11 @@ let rec print = function
       print d_l;
       print_string (k ^ " : "); print_int v; print_string "\n";
       print d_r)
+
+let swap a i j =
+    let z = a.(i) in
+    a.(i) <- a.(j); (* podpicje izvede in vrne rezultat stran ce je unit cene te obvesti da je neki *)
+    a.(j) <- z
 =======
 (* TESTING *)
 
