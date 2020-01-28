@@ -1,4 +1,10 @@
 <<<<<<< HEAD
+
+
+from functools import lru_cache
+@lru_cache(maxsize=None)
+test_matrix = [[1, 2, 0, 5], [0, 4, 1, 1], [8, 0, 4, 2]]
+##########################
 module type Linear = sig
 module Matrix : Linear = struct
 ###################
@@ -92,3 +98,12 @@ let test2 =
   let r = Node(leaf 1, 4, leaf 10) in
   Node(l, 7, r)
 >>>>>>> 603d1b53508be8ac4e94256d6b8dbdb4d80466c2
+
+let rec vsi_najemniki = function
+  | Obdelovan vrtickar -> [vrtickar]
+  | Prost -> []
+  | Oddan (oddajalec, (podvrt, podvrtovi)) ->
+    let vsi_podnajemniki =
+      List.fold_left (fun acc vrt -> vsi_najemniki vrt @ acc) [] podvrtovi
+    in
+    oddajalec :: vsi_najemniki podvrt @ vsi_podnajemniki
